@@ -1,5 +1,5 @@
 # Traefik OIDC Relying Party
-(fork of https://github.com/Gwojda/keycloakopenid)
+(fork of https://github.com/alexdelprete/traefik-oidc-relying-party)
 
 This plugin for Traefik allows it to authenticate requests against an OpenID Provider like Zitadel, Keycloak, Authentik, etc. (I test it with Zitadel, my homelab's IAM solution). It utilizes the provider's client credentials flow to retrieve an access token, which is then set as a bearer token in the Authorization header of the incoming requests. The plugin communicates with the provider using the OpenID Connect protocol (OIDC).
 
@@ -43,8 +43,8 @@ First, enable the plugins support in your Traefik configuration file (traefik.ym
 experimental:
   plugins:
     traefik-oidc-relying-party:
-      moduleName: "github.com/alexdelprete/traefik-oidc-relying-party"
-      version: "v1.0.0"
+      moduleName: "github.com/odit-services/traefik-oidc-relying-party"
+      version: "0.0.2"
 ```
 
 Usage
@@ -59,46 +59,4 @@ http:
           KeycloakURL: "https://my-provider-url.com"
           ClientID: "<CLIENT_ID>"
           ClientSecret: "<CLIENT_SECRET>"
-```
-
-Alternatively, ClientID and ClientSecret can be read from a file to support Docker Secrets and Kubernetes Secrets:
-
-```yaml
-http:
-  middlewares:
-    my-keycloakopenid:
-      plugin:
-        traefik-oidc-relying-party:
-          ProviderURL: "https://my-provider-url.com/auth"
-          ClientIDFile: "/run/secrets/clientId.txt"
-          ClientSecretFile: "/run/secrets/clientSecret.txt"
-```
-
-Last but not least, each configuration can be read from environment file to support some Kubernetes configurations:
-
-```yaml
-http:
-  middlewares:
-    my-keycloakopenid:
-      plugin:
-        keycloakopenid:
-          ProviderURLEnv: "MY_KEYCLOAK_URL"
-          ClientIDEnv: "MY_KEYCLOAK_CLIENT_ID"
-          ClientSecretEnv: "MY_KEYCLOAK_CLIENT_SECRET"
-```
-
-This plugin also sets a header with a claim from the Provider, as it has become reasonably common. Claim name and header name can be modified.  
-The default claim is <code>preferred_username</code>, the default header name is <code>X-Forwarded-User</code> :
-
-```yaml
-http:
-  middlewares:
-    my-keycloakopenid:
-      plugin:
-        keycloakopenid:
-          ProviderURL: "my-keycloak-url.com" # <- Also supports complete URL, e.g. https://my-keycloak-url.com/auth
-          ClientID: "<CLIENT_ID>"
-          ClientSecret: "<CLIENT_SECRET>"
-          UserClaimName: "my-uncommon-claim"
-          UserHeaderName: "X-Custom-Header"
 ```
